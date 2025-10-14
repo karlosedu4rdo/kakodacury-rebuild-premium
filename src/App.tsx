@@ -26,19 +26,19 @@ const App = () => (
           <BannersProvider>
             <Toaster />
             <Sonner />
-            <WhatsAppButton />
             <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/imoveis" element={<Imoveis />} />
-              <Route path="/indicacao" element={<Indicacao />} />
-              <Route path="/contato" element={<Contato />} />
-              <Route path="/sobre" element={<Sobre />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+              <WhatsAppButton />
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/imoveis" element={<Imoveis />} />
+                <Route path="/indicacao" element={<Indicacao />} />
+                <Route path="/contato" element={<Contato />} />
+                <Route path="/sobre" element={<Sobre />} />
+                <Route path="/admin" element={<Admin />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
             </BrowserRouter>
           </BannersProvider>
         </PropertiesProvider>
