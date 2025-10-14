@@ -1,0 +1,9 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background azul primário -->
+  <rect width="32" height="32" rx="6" fill="#1328c6"/>
+  
+  <!-- Ícone de casa branco -->
+  <path d="M16 8L10 13V23H14V18H18V23H22V13L16 8Z" fill="white"/>
+  <path d="M16 8L10 13V23H14V18H18V23H22V13L16 8Z" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
