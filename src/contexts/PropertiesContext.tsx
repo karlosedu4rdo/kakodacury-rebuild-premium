@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { properties as initialProperties } from "@/lib/mockData";
+import { PropertyService } from "@/lib/propertyService";
 
 export interface Property {
   id: string;
@@ -17,53 +18,84 @@ export interface Property {
 
 interface PropertiesContextType {
   properties: Property[];
-  addProperty: (property: Property) => void;
-  updateProperty: (property: Property) => void;
-  deleteProperty: (id: string) => void;
-  deleteAllProperties: () => void;
+  loading: boolean;
+  addProperty: (property: Property) => Promise<void>;
+  updateProperty: (property: Property) => Promise<void>;
+  deleteProperty: (id: string) => Promise<void>;
+  deleteAllProperties: () => Promise<void>;
   setProperties: (properties: Property[]) => void;
 }
 
 const PropertiesContext = createContext<PropertiesContextType | undefined>(undefined);
 
-const STORAGE_KEY = "kakodacury_properties";
-
 export const PropertiesProvider = ({ children }: { children: ReactNode }) => {
-  const [properties, setPropertiesState] = useState<Property[]>(() => {
-    // Tenta carregar do localStorage ao iniciar
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        return JSON.parse(stored);
-      } catch (error) {
-        console.error("Erro ao carregar propriedades do localStorage:", error);
-        return initialProperties;
-      }
-    }
-    return initialProperties;
-  });
+  const [properties, setPropertiesState] = useState<Property[]>(initialProperties);
+  const [loading, setLoading] = useState(true);
 
-  // Salva no localStorage sempre que as propriedades mudarem
+  // Carregar propriedades na inicialização
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(properties));
-  }, [properties]);
+    const loadProperties = async () => {
+      try {
+        const loadedProperties = await PropertyService.getProperties();
+        if (loadedProperties.length > 0) {
+          setPropertiesState(loadedProperties);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar propriedades:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const addProperty = (property: Property) => {
-    setPropertiesState((prev) => [...prev, property]);
+    loadProperties();
+  }, []);
+
+  const addProperty = async (property: Property) => {
+    try {
+      const newProperty = await PropertyService.addProperty(property);
+      setPropertiesState((prev) => [...prev, newProperty]);
+    } catch (error) {
+      console.error("Erro ao adicionar propriedade:", error);
+      // Fallback para estado local
+      setPropertiesState((prev) => [...prev, property]);
+    }
   };
 
-  const updateProperty = (property: Property) => {
-    setPropertiesState((prev) =>
-      prev.map((p) => (p.id === property.id ? property : p))
-    );
+  const updateProperty = async (property: Property) => {
+    try {
+      const updatedProperty = await PropertyService.updateProperty(property);
+      setPropertiesState((prev) =>
+        prev.map((p) => (p.id === property.id ? updatedProperty : p))
+      );
+    } catch (error) {
+      console.error("Erro ao atualizar propriedade:", error);
+      // Fallback para estado local
+      setPropertiesState((prev) =>
+        prev.map((p) => (p.id === property.id ? property : p))
+      );
+    }
   };
 
-  const deleteProperty = (id: string) => {
-    setPropertiesState((prev) => prev.filter((p) => p.id !== id));
+  const deleteProperty = async (id: string) => {
+    try {
+      await PropertyService.deleteProperty(id);
+      setPropertiesState((prev) => prev.filter((p) => p.id !== id));
+    } catch (error) {
+      console.error("Erro ao deletar propriedade:", error);
+      // Fallback para estado local
+      setPropertiesState((prev) => prev.filter((p) => p.id !== id));
+    }
   };
 
-  const deleteAllProperties = () => {
-    setPropertiesState([]);
+  const deleteAllProperties = async () => {
+    try {
+      await PropertyService.deleteAllProperties();
+      setPropertiesState([]);
+    } catch (error) {
+      console.error("Erro ao deletar todas as propriedades:", error);
+      // Fallback para estado local
+      setPropertiesState([]);
+    }
   };
 
   const setProperties = (newProperties: Property[]) => {
@@ -74,6 +106,7 @@ export const PropertiesProvider = ({ children }: { children: ReactNode }) => {
     <PropertiesContext.Provider
       value={{
         properties,
+        loading,
         addProperty,
         updateProperty,
         deleteProperty,

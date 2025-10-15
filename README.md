@@ -32,10 +32,30 @@ Sistema completo de gestão imobiliária com dashboard administrativo, rastreame
 - **UI Components**: Shadcn/UI
 - **Routing**: React Router DOM v6
 - **State Management**: Context API
-- **Data Persistence**: localStorage
+- **Data Persistence**: Supabase (Database) + localStorage (Fallback)
 - **Icons**: Lucide React
 - **Forms**: React Hook Form + Zod
 - **Excel**: XLSX
+
+## 🗄️ Configuração do Banco de Dados
+
+### Supabase Setup
+Para resolver problemas de persistência na Vercel, implementamos integração com Supabase:
+
+1. **Criar conta no Supabase**: https://supabase.com
+2. **Criar novo projeto**
+3. **Executar o script SQL**: Use o arquivo `supabase-setup.sql`
+4. **Configurar variáveis de ambiente**:
+   ```env
+   VITE_SUPABASE_URL=https://your-project-id.supabase.co
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
+5. **Configurar na Vercel**: Adicionar as variáveis em Settings > Environment Variables
+
+📋 **Instruções detalhadas**: Veja `SUPABASE_SETUP.md`
+
+### Fallback Automático
+O sistema funciona mesmo sem Supabase configurado, usando localStorage como fallback.
 
 ## 🛠️ Instalação e Desenvolvimento
 
